@@ -1,0 +1,16 @@
+com.mengbo.factory
+com.mengbo.carota
+com.android.settings
+com.mengbo.systemsettings
+com.mengbo.avm
+com.mengbo.statistic
+io.appium.settings
+com.he.ardc
+com.autopai.wtservice
+com.autopai.wttboxservice
+com.tencent.wecarspeech.gaodeagent
+com.android.phone
+com.wt.stability.monitor
+com.google.android.car.vms.subscriber
+com.android.car.settings
+com.chery.carsettings
