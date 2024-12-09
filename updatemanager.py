@@ -2,7 +2,8 @@ import os
 import sys
 import requests
 import subprocess
-from PyQt5.QtWidgets import QMessageBox
+import tkinter as tk
+from tkinter import messagebox
 from packaging import version  # version 비교를 위한 모듈 추가
 
 GITHUB_API_URL = "https://api.github.com/repos/byeonggonkang/Validation_Support_Tool_Xjera/releases/latest"
@@ -30,9 +31,9 @@ def check_for_updates():
 
 def prompt_update(latest_version, download_url):
     message = f"A new version {latest_version} is available. Do you want to update?"
-    reply = QMessageBox.question(None, "Update Available", message, QMessageBox.Yes | QMessageBox.No)
-    if reply == QMessageBox.Yes:
-        download_and_install_update(download_url, latest_version)  # latest_version 추가
+    response = messagebox.askquestion("Update Available", message)
+    if response == 'yes':
+        download_and_install_update(download_url, latest_version)
 
 def download_and_install_update(download_url, latest_version):
     try:
@@ -48,8 +49,7 @@ def download_and_install_update(download_url, latest_version):
                 file.write(chunk)
 
         # 업데이트 완료 메시지 표시
-        QMessageBox.information(
-            None,
+        messagebox.showinfo(
             "Update Complete",
             f"Update has been downloaded successfully.\n"
             f"The new file will now be executed:\n{new_exe_path}",
@@ -62,4 +62,17 @@ def download_and_install_update(download_url, latest_version):
         sys.exit(0)
 
     except Exception as e:
-        QMessageBox.critical(None, "Update Failed", f"An error occurred while updating: {e}")
+        messagebox.showerror("Update Failed", f"An error occurred while updating: {e}")
+
+def main():
+    # Tkinter GUI 설정
+    root = tk.Tk()
+    root.withdraw()  # 기본 Tkinter 창을 숨깁니다.
+
+    # 프로그램 시작 시 1초 후 업데이트 확인
+    root.after(1000, check_for_updates)
+
+    root.mainloop()
+
+if __name__ == '__main__':
+    main()

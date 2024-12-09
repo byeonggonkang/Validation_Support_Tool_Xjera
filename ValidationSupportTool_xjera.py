@@ -49,7 +49,7 @@ class App(tk.Tk):
     def check_updates_on_startup(self):
         self.after(1000, updatemanager.check_for_updates)
 
-    def send_github_issue(issue_title, issue_body):
+    def send_github_issue(self, issue_title, issue_body):
         github_token = gittoken.token
         github_repo = gittoken.repo
 
