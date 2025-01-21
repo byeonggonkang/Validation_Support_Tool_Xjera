@@ -7,7 +7,7 @@ from tkinter import messagebox
 from packaging import version  # version 비교를 위한 모듈 추가
 
 GITHUB_API_URL = "https://api.github.com/repos/byeonggonkang/Validation_Support_Tool_Xjera/releases/latest"
-CURRENT_VERSION = "v1.0.0"
+CURRENT_VERSION = "v1.0.1"
 
 def check_for_updates():
     try:

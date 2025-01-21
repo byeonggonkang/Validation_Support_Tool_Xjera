@@ -212,6 +212,9 @@ class App(tk.Tk):
     def show_version_history(self):
         version_info = """
 
+        Version v1.0.1:
+        - Add the function of Screen Mirror Loop
+
         Version v1.0.0:
         - Initial release.
 

@@ -3,6 +3,7 @@ from tkinter import scrolledtext, ttk
 import subprocess
 import threading
 import canExcuteList as sendCan
+import time
 
 def main_adbcontroller(parent):
     parent.grid_rowconfigure(1, weight=0)
@@ -11,6 +12,8 @@ def main_adbcontroller(parent):
     parent.grid_columnconfigure(1, weight=1)
     parent.grid_columnconfigure(2, weight=1)
     parent.grid_columnconfigure(3, weight=1)
+    scrcpyloopflag = False
+    scrcpy_thread = None
 
     global log_area
     
@@ -67,12 +70,31 @@ def main_adbcontroller(parent):
                     process = subprocess.Popen(cmd_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
                     thread = threading.Thread(target=read_process_output, args=(process,))
                     thread.start()
+                    return thread
                 elif device_count > 1:
                     log_message("More than one device is connected. Please disconnect one of the devices.")
             else:
                 log_message("Please add the ADB path to the environment variables.")
         except subprocess.CalledProcessError as e:
             log_message(f"adb devices command Error: {e}")
+        return None
+
+    def toggle_scrcpymirror_loop():
+        nonlocal scrcpyloopflag, scrcpy_thread
+        if scrcpyloopflag:
+            scrcpyloopflag = False
+            log_message("Stopping Scrcpy loop.")
+        else:
+            scrcpyloopflag = True
+            log_message("Starting Scrcpy loop.")
+            threading.Thread(target=scrcpymirror_loop).start()
+
+    def scrcpymirror_loop():
+        nonlocal scrcpy_thread
+        while scrcpyloopflag:
+            if scrcpy_thread is None or not scrcpy_thread.is_alive():
+                scrcpy_thread = start_scrcpymirror()
+            time.sleep(1)
 
     def check_adb_devices():
         try:
@@ -85,6 +107,7 @@ def main_adbcontroller(parent):
                     log_message("Please check the ADB device connection.")
                 elif device_count == 1:
                     log_message("ADB Connected.")
+                    subprocess.run(['adb', 'root'], capture_output=True, text=True)
                 elif device_count > 1:
                     log_message("More than one device is connected. Please disconnect one of the devices.")
             else:
@@ -149,7 +172,8 @@ def main_adbcontroller(parent):
         ("USB Mode ADB Disable", lambda: run_command_in_thread(["adb root", "adb shell setprop persist.usb.adbenable 0"], "USB Mode ADB Disable")),
         ("Enter FactoryMode", lambda: run_command_in_thread(["adb root", "adb shell am start -n com.mengbo.factory/com.mengbo.factory.activity.MainActivity"], "Enter FactoryMode")),
         ("adb reboot", lambda: run_command_in_thread(["adb root", "adb reboot"], "adb reboot")),
-        ("Screen Mirror", start_scrcpymirror)
+        ("Screen Mirror", start_scrcpymirror),
+        ("Screen Mirror Loop", toggle_scrcpymirror_loop)
     ]
 
     for i, (text, func) in enumerate(adb_buttons):
